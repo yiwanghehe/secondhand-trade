@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yw.secondhandtrade.mapper.UserMapper">
+
+    <!--插入用户数据-->
+    <insert id="insert">
+        insert into user (username, password, nickname, avatar_url, phone, status, create_time, update_time)
+            values (#{username}, #{password}, #{nickname}, #{avatarUrl}, #{phone}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!--根据用户名查询用户-->
+    <select id="getByUsername" resultType="com.yw.secondhandtrade.pojo.entity.User">
+        select * from user where username = #{username}
+    </select>
+
+    <!--编辑用户信息-->
+    <update id="update" parameterType="User">
+        update user
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="nickname != null">nickname = #{nickname}</if>
+            <if test="avatarUrl != null">avatar_url = #{avatarUrl}</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--根据id查询用户信息-->
+    <select id="getById" resultType="com.yw.secondhandtrade.pojo.entity.User">
+        select * from user where id = #{id}
+    </select>
+
+</mapper>
