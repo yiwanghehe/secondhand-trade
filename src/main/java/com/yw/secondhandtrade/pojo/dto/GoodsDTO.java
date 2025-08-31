@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Schema(description = "商品数据传输对象")
 public class GoodsDTO implements Serializable {
 
-    @Schema(description = "商品ID (系统生成，无需填写)", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "商品ID (修改时需要提供)", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @Schema(description = "分类ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")

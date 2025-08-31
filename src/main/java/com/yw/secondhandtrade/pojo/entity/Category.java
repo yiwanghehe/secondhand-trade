@@ -1,9 +1,18 @@
 package com.yw.secondhandtrade.pojo.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category implements Serializable {
 
     @Serial
@@ -11,7 +20,7 @@ public class Category implements Serializable {
 
     private Long id;
     private String name;
-    private Integer sort_order;
+    private Integer sortOrder;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

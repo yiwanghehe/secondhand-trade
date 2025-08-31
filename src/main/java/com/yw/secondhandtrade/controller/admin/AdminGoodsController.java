@@ -63,15 +63,13 @@ public class AdminGoodsController {
 //    }
 
     /**
-     * 根据id修改商品信息
+     * 修改商品信息
      * @param goodsDTO
-     * @param id
      * @return
      */
-    @PutMapping("/update/{id}")
-    @Operation(summary = "根据id修改商品信息")
-    public Result update(@RequestBody GoodsDTO goodsDTO, @PathVariable("id") Long id) {
-        goodsDTO.setId(id);
+    @PutMapping("/update")
+    @Operation(summary = "修改商品信息")
+    public Result update(@RequestBody GoodsDTO goodsDTO) {
         log.info("修改商品信息：{}", goodsDTO);
         goodsService.update(goodsDTO);
         return Result.success();
