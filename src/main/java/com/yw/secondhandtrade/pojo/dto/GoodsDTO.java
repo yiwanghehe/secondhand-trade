@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @Schema(description = "商品数据传输对象")
@@ -22,7 +23,7 @@ public class GoodsDTO implements Serializable {
     private String description;
 
     @Schema(description = "价格", requiredMode = Schema.RequiredMode.REQUIRED, example = "5")
-    private Double price;
+    private BigDecimal price;
 
     @Schema(description = "图片", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "sadasdadas")
     private String images;

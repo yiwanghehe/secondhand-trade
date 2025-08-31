@@ -1,32 +1,30 @@
 package com.yw.secondhandtrade.pojo.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Goods implements Serializable {
+public class Address implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;
-    private Long sellerId;
-    private Long categoryId;
-    private String name;
-    private String description;
-    private BigDecimal price;
-    private String images;
-    private Integer status;
-    private Integer stock;
+    private Long userId;
+    private String contactName;
+    private String phone;
+    private String campus;
+    private String detailLocation;
+    private Integer isDefault;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-
 }
