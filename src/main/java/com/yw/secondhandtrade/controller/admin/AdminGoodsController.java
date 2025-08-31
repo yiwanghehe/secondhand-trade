@@ -63,27 +63,29 @@ public class AdminGoodsController {
 //    }
 
     /**
-     * 修改商品信息
+     * 根据id修改商品信息
      * @param goodsDTO
+     * @param id
      * @return
      */
-    @PutMapping("/update")
-    @Operation(summary = "修改商品信息")
-    public Result update(@RequestBody GoodsDTO goodsDTO) {
+    @PutMapping("/update/{id}")
+    @Operation(summary = "根据id修改商品信息")
+    public Result update(@RequestBody GoodsDTO goodsDTO, @PathVariable("id") Long id) {
+        goodsDTO.setId(id);
         log.info("修改商品信息：{}", goodsDTO);
         goodsService.update(goodsDTO);
         return Result.success();
     }
 
     /**
-     * 商品上下架
+     * 根据id上下架商品
      * @param status 商品状态 0:在售 2:下架
      * @param id 商品id
      * @return
      */
     @PostMapping("/status/{status}")
-    @Operation(summary = "商品上下架")
-    public Result startOrStop(@PathVariable Integer status, Long id) {
+    @Operation(summary = "根据id上下架商品")
+    public Result startOrStop(@PathVariable("status") Integer status, Long id) {
         log.info("修改商品状态：{}, {}", status, id);
         goodsService.startOrStop(status, id);
         return Result.success();
@@ -96,7 +98,7 @@ public class AdminGoodsController {
      */
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "根据id删除商品")
-    public Result deleteById(@PathVariable Long id) {
+    public Result deleteById(@PathVariable("id") Long id) {
         log.info("根据id删除商品：{}", id);
         goodsService.deleteById(id);
         return Result.success();

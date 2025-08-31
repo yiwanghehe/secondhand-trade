@@ -18,41 +18,30 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-
-/**
- * 用户端
- */
 @RestController
 @RequestMapping("/user/user")
 @Slf4j
-@Tag(name = "用户端")
-public class UserController {
+@Tag(name = "【用户端】用户接口")
+public class AccountController {
 
     @Autowired
-    UserService userService;
-
+    private UserService userService;
     @Autowired
-    JwtProperties jwtProperties;
+    private JwtProperties jwtProperties;
 
     /**
-     * 注册用户
-     *
-     * @param userDTO
-     * @return
+     * 注册
      */
-    @PostMapping("/save")
-    @Operation(summary = "注册用户")
-    public Result save(@RequestBody UserDTO userDTO) {
+    @PostMapping("/register")
+    @Operation(summary = "注册")
+    public Result register(@RequestBody UserDTO userDTO) {
         log.info("注册用户: {}", userDTO);
-        userService.save(userDTO);
+        userService.register(userDTO);
         return Result.success();
     }
 
     /**
      * 登录
-     *
-     * @param userLoginDTO
-     * @return
      */
     @PostMapping("/login")
     @Operation(summary = "登录")
@@ -61,9 +50,10 @@ public class UserController {
 
         User user = userService.login(userLoginDTO);
 
-        //生成jwt令牌
+        // 生成jwt令牌
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID, user.getId());
+        claims.put(JwtClaimsConstant.USER_ROLE, user.getRole());
         String token = JwtUtil.createJWT(
                 jwtProperties.getUserSecretKey(),
                 jwtProperties.getUserTtl(),
@@ -72,11 +62,24 @@ public class UserController {
 
         UserLoginVO userLoginVO = UserLoginVO.builder()
                 .id(user.getId())
-                .userName(user.getUsername())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .role(user.getRole())
                 .token(token)
                 .build();
 
         return Result.success(userLoginVO);
     }
 
+    /**
+     * 编辑当前用户信息
+     */
+    @PutMapping("/update")
+    @Operation(summary = "编辑当前用户信息")
+    public Result updateCurrent(@RequestBody UserDTO userDTO) {
+        log.info("编辑当前用户信息: {}", userDTO);
+        userService.updateCurrent(userDTO);
+        return Result.success();
+    }
 }
+

@@ -6,6 +6,7 @@ package com.yw.secondhandtrade.common.constant;
 public class MessageConstant {
     public static final String ALREADY_EXISTS = "已存在";
     public static final String PASSWORD_ERROR = "密码错误";
+    public static final String PASSWORD_EMPTY = "密码不能为空";
     public static final String ACCOUNT_NOT_FOUND = "账号不存在";
     public static final String ACCOUNT_LOCKED = "账号被锁定";
     public static final String UNKNOWN_ERROR = "未知错误";
@@ -18,6 +19,8 @@ public class MessageConstant {
     public static final String ORDER_NOT_FOUND = "订单不存在";
 
     public static final String GOODS_NOT_FOUND_OR_NO_PERMISSION = "商品不存在，或者商品的卖家ID与当前用户ID不匹配";
+    public static final String GOODS_INVALID_STATUS = "商品状态不合法";
+    public static final String GOODS_TEST_DESCRIPTION = "商品测试描述";
 
 }
 

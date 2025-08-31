@@ -65,10 +65,11 @@ public interface GoodsService {
     List<Goods> getMyPublished();
 
     /**
-     * 【用户端】下架我的商品
-     * @param id
+     * 【用户端】更改我的商品状态（下架、重新上架、售出等）
+     * @param id 商品ID
+     * @param status 要设置的状态
      */
-    void takedownMyGoods(Long id);
+    void changeMyGoodsStatus(Long id, Integer status);
 
     /**
      * 【用户端】修改我的商品信息

@@ -19,12 +19,18 @@ public class UserLoginVO implements Serializable {
     private Long id;
 
     @Schema(description = "用户名")
-    private String userName;
+    private String username;
 
-    @Schema(description = "昵称")
+    @Schema(description = "姓名 (管理员)")
+    private String name;
+
+    @Schema(description = "昵称 (普通用户)")
     private String nickname;
+
+    @Schema(description = "角色 1:普通用户 2:管理员")
+    private Integer role;
 
     @Schema(description = "jwt令牌")
     private String token;
-
 }
+

@@ -6,6 +6,7 @@ import com.yw.secondhandtrade.common.constant.MessageConstant;
 import com.yw.secondhandtrade.common.constant.StatusConstant;
 import com.yw.secondhandtrade.common.context.BaseContext;
 import com.yw.secondhandtrade.common.exception.BusinessException;
+import com.yw.secondhandtrade.common.exception.GoodsNotFoundException;
 import com.yw.secondhandtrade.common.result.PageResult;
 import com.yw.secondhandtrade.mapper.GoodsMapper;
 import com.yw.secondhandtrade.pojo.dto.GoodsDTO;
@@ -36,8 +37,22 @@ public class GoodsServiceImpl implements GoodsService {
     public void save(GoodsDTO goodsDTO) {
         Goods goods = new Goods();
         BeanUtils.copyProperties(goodsDTO, goods);
-        // 默认状态为“在售”
+
+        // 从线程上下文获取当前登录用户的ID，并设置为卖家ID
+        Long currentUserId = BaseContext.getId();
+        goods.setSellerId(currentUserId);
+
+        // 新发布的商品默认在售
         goods.setStatus(StatusConstant.ENABLE);
+
+        if(goods.getDescription() == null){
+            goods.setDescription(MessageConstant.GOODS_TEST_DESCRIPTION);
+        }
+        // 二手商品库存默认为1
+        if (goods.getStock() == null) {
+            goods.setStock(1);
+        }
+
         goodsMapper.insert(goods);
     }
 
@@ -48,7 +63,11 @@ public class GoodsServiceImpl implements GoodsService {
      */
     @Override
     public Goods getById(Long id) {
-        return goodsMapper.getById(id);
+        Goods goods = goodsMapper.getById(id);
+        if(goods == null) {
+            throw new GoodsNotFoundException(MessageConstant.GOODS_NOT_FOUND_OR_NO_PERMISSION);
+        }
+        return goods;
     }
 
 //    /**
@@ -109,7 +128,7 @@ public class GoodsServiceImpl implements GoodsService {
         Goods goods = new Goods();
         BeanUtils.copyProperties(goodsDTO, goods);
 
-        // 关键：从线程上下文获取当前登录用户的ID，并设置为卖家ID
+        // 从线程上下文获取当前登录用户的ID，并设置为卖家ID
         Long currentUserId = BaseContext.getId();
         goods.setSellerId(currentUserId);
 
@@ -129,25 +148,24 @@ public class GoodsServiceImpl implements GoodsService {
      */
     @Override
     public List<Goods> getMyPublished() {
-        // 1. 获取当前登录用户的ID
+        // 获取当前登录用户的ID
         Long currentUserId = BaseContext.getId();
-        System.out.println(currentUserId);
-        // 2. 调用Mapper方法，根据用户ID查询商品列表
         List<Goods> goodsList = goodsMapper.getBySellerId(currentUserId);
 
         return goodsList;
     }
 
     /**
-     * 【用户端】下架我的商品
-     * @param id
+     * 【用户端】更改我的商品状态（下架、重新上架、售出等）
+     * @param id 商品ID
+     * @param status 要设置的状态
      */
     @Override
-    public void takedownMyGoods(Long id) {
-        // 1. 获取当前登录用户的ID
+    public void changeMyGoodsStatus(Long id, Integer status) {
+        // 获取当前登录用户的ID
         Long currentUserId = BaseContext.getId();
 
-        // 2. 权限校验：查询数据库，确认该商品是否属于当前用户
+        // 权限校验：查询数据库，确认该商品是否属于当前用户
         Goods goodsInDb = goodsMapper.getById(id);
 
         if (goodsInDb == null || !goodsInDb.getSellerId().equals(currentUserId)) {
@@ -155,10 +173,15 @@ public class GoodsServiceImpl implements GoodsService {
             throw new BusinessException(MessageConstant.GOODS_NOT_FOUND_OR_NO_PERMISSION);
         }
 
-        // 3. 构造更新对象，执行下架操作
+        // 验证状态参数是否有效
+        if (!StatusConstant.isValidStatus(status)) {
+            throw new BusinessException(MessageConstant.GOODS_INVALID_STATUS);
+        }
+
+        // 构造更新对象，执行状态变更操作
         Goods goodsToUpdate = Goods.builder()
                 .id(id)
-                .status(StatusConstant.DISABLE) // 2: 代表下架
+                .status(status)
                 .build();
 
         goodsMapper.update(goodsToUpdate);
@@ -170,18 +193,20 @@ public class GoodsServiceImpl implements GoodsService {
      */
     @Override
     public void updateMyGoods(GoodsDTO goodsDTO) {
-        // 1. 获取当前登录用户的ID
+        // 获取当前登录用户的ID
         Long currentUserId = BaseContext.getId();
 
-        // 2. 权限校验
+        // 权限校验
         Goods goodsInDb = goodsMapper.getById(goodsDTO.getId());
-        if (goodsInDb == null || !goodsInDb.getSellerId().equals(currentUserId)) {
+        if (goodsDTO.getId() == null || goodsInDb == null || !goodsInDb.getSellerId().equals(currentUserId)) {
             throw new BusinessException(MessageConstant.GOODS_NOT_FOUND_OR_NO_PERMISSION);
         }
 
-        // 3. 执行更新
+        // 执行更新
         Goods goodsToUpdate = new Goods();
         BeanUtils.copyProperties(goodsDTO, goodsToUpdate);
         goodsMapper.update(goodsToUpdate);
     }
+
+
 }

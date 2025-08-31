@@ -1,6 +1,7 @@
 package com.yw.secondhandtrade.interceptor;
 
 import com.yw.secondhandtrade.common.constant.JwtClaimsConstant;
+import com.yw.secondhandtrade.common.constant.RoleConstant;
 import com.yw.secondhandtrade.common.context.BaseContext;
 import com.yw.secondhandtrade.common.properties.JwtProperties;
 import com.yw.secondhandtrade.common.utils.JwtUtil;
@@ -13,9 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-/**
- * jwt令牌校验的拦截器
- */
 @Component
 @Slf4j
 public class JwtTokenAdminInterceptor implements HandlerInterceptor {
@@ -25,40 +23,38 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
 
     /**
      * 校验jwt
-     *
-     * @param request
-     * @param response
-     * @param handler
-     * @return
-     * @throws Exception
      */
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //判断当前拦截到的是Controller的方法还是其他资源
         if (!(handler instanceof HandlerMethod)) {
-            //当前拦截到的不是动态方法，直接放行
             return true;
         }
 
-        //1、从请求头中获取令牌
         String token = request.getHeader(jwtProperties.getAdminTokenName());
 
-        //2、校验令牌
         try {
             log.info("jwt校验:{}", token);
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
-            Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
-            log.info("当前员工id：", empId);
 
-            BaseContext.setId(empId);
+            // 校验角色权限
+            Integer role = (Integer) claims.get(JwtClaimsConstant.USER_ROLE);
+            if (role == null || !role.equals(RoleConstant.ADMIN)) {
+                // 角色不匹配，无权限
+                log.warn("用户角色权限不足, role: {}", role);
+                response.setStatus(403); // 403 Forbidden
+                return false;
+            }
 
-            //3、通过，放行
+            Long userId = Long.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
+            log.info("当前管理员id：{}", userId);
+
+            BaseContext.setId(userId);
             return true;
         } catch (Exception ex) {
-            //4、不通过，响应401状态码
+            log.error("JWT校验失败: ", ex);
             response.setStatus(401);
             return false;
         }
     }
-
-
 }
+

@@ -12,9 +12,6 @@ public class GoodsDTO implements Serializable {
     @Schema(description = "商品ID (系统生成，无需填写)", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
-    @Schema(description = "卖家ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    private Long sellerId;
-
     @Schema(description = "分类ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private Long categoryId;
 

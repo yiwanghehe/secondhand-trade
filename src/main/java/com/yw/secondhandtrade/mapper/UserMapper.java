@@ -1,8 +1,9 @@
 package com.yw.secondhandtrade.mapper;
 
-
+import com.github.pagehelper.Page;
 import com.yw.secondhandtrade.common.annotation.FillTime;
 import com.yw.secondhandtrade.common.enumeration.DBOperationType;
+import com.yw.secondhandtrade.pojo.dto.UserPageQueryDTO;
 import com.yw.secondhandtrade.pojo.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -25,7 +26,7 @@ public interface UserMapper {
     User getByUsername(@Param("username") String username);
 
     /**
-     * 编辑用户信息
+     * 动态编辑用户信息
      * @param user
      */
     @FillTime(DBOperationType.UPDATE)
@@ -37,4 +38,12 @@ public interface UserMapper {
      * @return
      */
     User getById(Long id);
+
+    /**
+     * 【管理端】用户分页查询
+     * @param userPageQueryDTO
+     * @return
+     */
+    Page<User> pageQuery(UserPageQueryDTO userPageQueryDTO);
 }
+

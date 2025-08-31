@@ -8,20 +8,23 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Long id;
     private String username;
     private String password;
-    private String nickname;
+    private String name; // 管理员姓名
+    private String nickname; // 用户昵称
     private String avatarUrl;
     private String phone;
+    private Integer role; // 1:普通用户 2:管理员
     private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-
 }
+

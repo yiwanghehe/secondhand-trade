@@ -4,9 +4,9 @@
 <mapper namespace="com.yw.secondhandtrade.mapper.UserMapper">
 
     <!--插入用户数据-->
-    <insert id="insert">
-        insert into user (username, password, nickname, avatar_url, phone, status, create_time, update_time)
-            values (#{username}, #{password}, #{nickname}, #{avatarUrl}, #{phone}, #{status}, #{createTime}, #{updateTime})
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into user (username, password, name, nickname, avatar_url, phone, role, status, create_time, update_time)
+        values (#{username}, #{password}, #{name}, #{nickname}, #{avatarUrl}, #{phone}, #{role}, #{status}, #{createTime}, #{updateTime})
     </insert>
 
     <!--根据用户名查询用户-->
@@ -14,16 +14,28 @@
         select * from user where username = #{username}
     </select>
 
-    <!--编辑用户信息-->
-    <update id="update" parameterType="User">
+    <!--【管理端】用户分页查询-->
+    <select id="pageQuery" resultType="com.yw.secondhandtrade.pojo.entity.User">
+        select * from user
+        <where>
+            <if test="name != null and name != ''">
+                and (name like concat('%', #{name}, '%') or nickname like concat('%', #{name}, '%'))
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!--动态编辑用户信息-->
+    <update id="update" parameterType="com.yw.secondhandtrade.pojo.entity.User">
         update user
         <set>
-            <if test="name != null">name = #{name},</if>
             <if test="username != null">username = #{username},</if>
-            <if test="password != null">password = #{password},</if>
-            <if test="nickname != null">nickname = #{nickname}</if>
-            <if test="avatarUrl != null">avatar_url = #{avatarUrl}</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
             <if test="phone != null">phone = #{phone},</if>
+            <if test="role != null">role = #{role},</if>
             <if test="status != null">status = #{status},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </set>
@@ -36,3 +48,4 @@
     </select>
 
 </mapper>
+

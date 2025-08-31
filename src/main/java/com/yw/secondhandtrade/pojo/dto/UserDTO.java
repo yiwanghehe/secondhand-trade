@@ -9,22 +9,22 @@ import java.io.Serializable;
 @Schema(description = "用户数据传输对象")
 public class UserDTO implements Serializable {
 
-    @Schema(description = "用户ID (系统生成，无需填写)", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "用户ID (修改时使用)", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
-    @Schema(description = "登录用户名", requiredMode = Schema.RequiredMode.REQUIRED, example = "yiwanghehe")
+    @Schema(description = "登录用户名", requiredMode = Schema.RequiredMode.REQUIRED, example = "testuser")
     private String username;
 
     @Schema(description = "登录密码", requiredMode = Schema.RequiredMode.REQUIRED, example = "123456")
     private String password;
 
-    @Schema(description = "昵称", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "yiwanghehe123")
+    @Schema(description = "姓名 (管理员使用)", example = "张三")
+    private String name;
+
+    @Schema(description = "昵称 (普通用户使用)", example = "测试用户")
     private String nickname;
 
-    @Schema(description = "头像URL", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "asdasdasd")
-    private String avatarUrl;
-
-    @Schema(description = "手机号码", requiredMode = Schema.RequiredMode.REQUIRED, example = "13800138000")
+    @Schema(description = "手机号码", example = "13800138000")
     private String phone;
-
 }
+
