@@ -18,8 +18,8 @@ public class AddressDTO implements Serializable {
     private String phone;
 
     @Schema(description = "常用交易地点", requiredMode = Schema.RequiredMode.REQUIRED, example = "一食堂门口")
-    private String detail_location;
+    private String detailLocation;
 
-    @Schema(description = "是否为默认地址 (0:否, 1:是)", example = "0")
+    @Schema(description = "是否为默认地址 (0:是, 1:否)", example = "0")
     private Integer isDefault;
 }

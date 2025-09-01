@@ -5,17 +5,27 @@ package com.yw.secondhandtrade.common.constant;
  */
 public class StatusConstant {
 
+    // 通用状态
     //启用、在售
     public static final Integer ENABLE = 0;
-
     //禁用、售出
     public static final Integer DISABLE = 1;
-
     //下架
     public static final Integer OFF_SHELF = 2;
 
+    // 地址默认状态
     /**
-     * 验证状态值是否有效
+     * 默认地址
+     */
+    public static final Integer DEFAULT_ADDRESS = 0;
+    /**
+     * 非默认地址
+     */
+    public static final Integer NON_DEFAULT_ADDRESS = 1;
+
+
+    /**
+     * 验证通用状态值是否有效
      * @param status 状态值
      * @return 是否有效
      */
@@ -25,4 +35,3 @@ public class StatusConstant {
                 StatusConstant.OFF_SHELF.equals(status);
     }
 }
-
