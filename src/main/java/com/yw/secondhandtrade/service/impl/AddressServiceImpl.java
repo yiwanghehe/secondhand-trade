@@ -1,7 +1,9 @@
 package com.yw.secondhandtrade.service.impl;
 
+import com.yw.secondhandtrade.common.constant.MessageConstant;
 import com.yw.secondhandtrade.common.constant.StatusConstant;
 import com.yw.secondhandtrade.common.context.BaseContext;
+import com.yw.secondhandtrade.common.exception.BusinessException;
 import com.yw.secondhandtrade.mapper.AddressMapper;
 import com.yw.secondhandtrade.pojo.dto.AddressDTO;
 import com.yw.secondhandtrade.pojo.entity.Address;
@@ -26,8 +28,7 @@ public class AddressServiceImpl implements AddressService {
         BeanUtils.copyProperties(addressDTO, address);
         address.setUserId(BaseContext.getId());
 
-        // 如果新增的地址是默认地址，需要将该用户其他地址设为非默认
-        if (address.getIsDefault() != null && address.getIsDefault().equals(StatusConstant.ENABLE)) {
+        if (address.getIsDefault() != null && address.getIsDefault().equals(StatusConstant.DEFAULT_ADDRESS)) {
             addressMapper.setAllToNonDefaultByUserId(address.getUserId());
         }
 
@@ -42,18 +43,28 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address getById(Long id) {
-        return addressMapper.getById(id);
+        Address address = addressMapper.getById(id);
+
+        // --- 安全校验 ---
+        // 检查地址是否存在，以及地址的userId是否与当前登录用户ID匹配
+        if (address == null || !address.getUserId().equals(BaseContext.getId())) {
+            throw new BusinessException(MessageConstant.ADDRESS_NOT_FOUND_OR_NO_PERMISSION);
+        }
+        return address;
     }
 
     @Override
     @Transactional
     public void update(AddressDTO addressDTO) {
+        // --- 安全校验 ---
+        // 在修改前，先用getById检查权限
+        getById(addressDTO.getId());
+
         Address address = new Address();
         BeanUtils.copyProperties(addressDTO, address);
-        address.setUserId(BaseContext.getId()); // 确保更新时也能关联到当前用户
+        address.setUserId(BaseContext.getId());
 
-        // 如果将该地址设为默认，需要将该用户其他地址设为非默认
-        if (address.getIsDefault() != null && address.getIsDefault().equals(StatusConstant.ENABLE)) {
+        if (address.getIsDefault() != null && address.getIsDefault().equals(StatusConstant.DEFAULT_ADDRESS)) {
             addressMapper.setAllToNonDefaultByUserId(address.getUserId());
         }
 
@@ -62,19 +73,24 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public void deleteById(Long id) {
+        // --- 安全校验 ---
+        // 在删除前，先用getById检查权限
+        getById(id);
         addressMapper.deleteById(id);
     }
 
     @Override
     @Transactional
     public void setDefault(Long id) {
+        // --- 安全校验 ---
+        // 在设置默认前，先用getById检查权限
+        getById(id);
+
         Long userId = BaseContext.getId();
-        // 将当前用户的所有地址都设置为非默认
         addressMapper.setAllToNonDefaultByUserId(userId);
-        // 将指定ID的地址设置为默认
         Address address = Address.builder()
                 .id(id)
-                .isDefault(StatusConstant.ENABLE)
+                .isDefault(StatusConstant.DEFAULT_ADDRESS)
                 .build();
         addressMapper.update(address);
     }

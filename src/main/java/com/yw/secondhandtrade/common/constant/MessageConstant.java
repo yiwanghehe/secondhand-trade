@@ -18,9 +18,13 @@ public class MessageConstant {
     public static final String ORDER_STATUS_ERROR = "订单状态错误";
     public static final String ORDER_NOT_FOUND = "订单不存在";
 
-    public static final String GOODS_NOT_FOUND_OR_NO_PERMISSION = "商品不存在，或者商品的卖家ID与当前用户ID不匹配";
+    public static final String GOODS_NOT_FOUND_OR_NO_PERMISSION = "商品不存在，或者商品的卖家ID与当前用户ID不匹配(无权限操作)";
     public static final String GOODS_INVALID_STATUS = "商品状态不合法";
     public static final String GOODS_TEST_DESCRIPTION = "商品测试描述";
+
+    public static final String ADDRESS_NOT_FOUND_OR_NO_PERMISSION = "地址不存在或无权限操作";
+
+    public static final String FAVORITE_NOT_FOUND = "收藏记录不存在或无权限操作";
 
 }
 

@@ -1,6 +1,8 @@
 package com.yw.secondhandtrade.service.impl;
 
+import com.yw.secondhandtrade.common.constant.MessageConstant;
 import com.yw.secondhandtrade.common.context.BaseContext;
+import com.yw.secondhandtrade.common.exception.BusinessException;
 import com.yw.secondhandtrade.mapper.FavoritesMapper;
 import com.yw.secondhandtrade.pojo.dto.FavoritesDTO;
 import com.yw.secondhandtrade.pojo.entity.Favorites;
@@ -36,6 +38,15 @@ public class FavoritesServiceImpl implements FavoritesService {
     public void remove(FavoritesDTO favoritesDTO) {
         Long userId = BaseContext.getId();
         Long goodsId = favoritesDTO.getGoodsId();
+
+        // --- 安全校验 ---
+        // 在删除前，先检查该收藏记录是否存在且属于当前用户
+        Favorites existingFavorite = favoritesMapper.getByUserIdAndGoodsId(userId, goodsId);
+        if (existingFavorite == null) {
+            // 如果收藏记录不存在，抛出异常，防止越权删除操作
+            throw new BusinessException(MessageConstant.FAVORITE_NOT_FOUND);
+        }
+
         favoritesMapper.deleteByUserIdAndGoodsId(userId, goodsId);
     }
 
