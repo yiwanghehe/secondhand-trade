@@ -47,13 +47,18 @@
         where id = #{id}
     </update>
 
-    <!--【管理端】根据id删除商品-->
+    <!--根据id删除商品-->
     <delete id="deleteById">
         delete from goods where id = #{id}
     </delete>
 
-    <!--【用户端】根据卖家ID查询其发布的商品列表-->
+    <!--根据卖家ID查询其发布的商品列表-->
     <select id="getBySellerId" resultType="com.yw.secondhandtrade.pojo.entity.Goods">
         select * from goods where seller_id = #{sellerId} order by create_time desc
     </select>
+
+    <!-- 更新商品库存 -->
+    <update id="updateStock">
+        update goods set stock = #{stock}, update_time = #{updateTime} where id = #{id}
+    </update>
 </mapper>

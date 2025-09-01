@@ -41,15 +41,21 @@ public interface GoodsMapper {
     void update(Goods goods);
 
     /**
-     * 【管理端】根据id删除商品
+     * 根据id删除商品
      * @param id
      */
     void deleteById(Long id);
 
     /**
-     * 【用户端】根据卖家ID查询其发布的商品列表
+     * 根据卖家ID查询其发布的商品列表
      * @param sellerId
      * @return
      */
     List<Goods> getBySellerId(Long sellerId);
+
+    /**
+     * 更新商品库存
+     * @param goods
+     */
+    void updateStock(Goods goods);
 }

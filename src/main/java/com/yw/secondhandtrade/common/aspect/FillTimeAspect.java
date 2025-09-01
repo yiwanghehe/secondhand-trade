@@ -9,10 +9,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Aspect
 @Component
@@ -50,11 +52,23 @@ public class FillTimeAspect {
         }
 
         Object entity = args[0];
-
-//        转变赋值的数据
         LocalDateTime now = LocalDateTime.now();
 
-//        根据当前不同的操作类型，为对应的属性通过反射来赋值
+        // 判断传参entity是一个实体类List还是单个实体类
+        // 是List的话，就分别给List里的每一个实体类填充时间，反之直接填充
+        if(entity instanceof List) {
+            List<?> list = (List<?>) entity;
+            for(Object item : list){
+                fillTimeForObject(item, dbOperationType, now);
+            }
+        } else {
+            fillTimeForObject(entity, dbOperationType, now);
+        }
+
+    }
+
+    public void fillTimeForObject(Object entity, DBOperationType dbOperationType, LocalDateTime now){
+        //        根据当前不同的操作类型，为对应的属性通过反射来赋值
         if (dbOperationType == DBOperationType.INSERT) {
 //            为4个公共字段赋值
             try {
@@ -79,7 +93,5 @@ public class FillTimeAspect {
                 throw new RuntimeException(e);
             }
         }
-
-
     }
 }

@@ -26,5 +26,9 @@ public class MessageConstant {
 
     public static final String FAVORITE_NOT_FOUND = "收藏记录不存在或无权限操作";
 
+    public static final String ORDER_ITEMS_EMPTY = "订单商品列表不能为空";
+    public static final String ORDER_CANNOT_MIX_SELLERS = "一笔订单只能包含同一位卖家的商品";
+    public static final String STOCK_NOT_ENOUGH = "库存不足";
+
 }
 
