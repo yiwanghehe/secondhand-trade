@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -22,4 +23,5 @@ public class Favorites implements Serializable {
     private Long userId;
     private Long goodsId;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }
