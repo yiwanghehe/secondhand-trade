@@ -11,6 +11,7 @@ import com.yw.secondhandtrade.common.result.PageResult;
 import com.yw.secondhandtrade.mapper.GoodsMapper;
 import com.yw.secondhandtrade.pojo.dto.GoodsDTO;
 //import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
+import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
 import com.yw.secondhandtrade.pojo.entity.Goods;
 import com.yw.secondhandtrade.service.GoodsService;
 import org.springframework.beans.BeanUtils;
@@ -206,6 +207,18 @@ public class GoodsServiceImpl implements GoodsService {
         Goods goodsToUpdate = new Goods();
         BeanUtils.copyProperties(goodsDTO, goodsToUpdate);
         goodsMapper.update(goodsToUpdate);
+    }
+
+    /**
+     * 【公共】商品分页查询
+     * @param goodsPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQueryPublic(GoodsPageQueryDTO goodsPageQueryDTO) {
+        PageHelper.startPage(goodsPageQueryDTO.getPage(), goodsPageQueryDTO.getPageSize());
+        Page<Goods> page = goodsMapper.pageQueryPublic(goodsPageQueryDTO);
+        return new PageResult(page.getTotal(), page.getResult());
     }
 
 

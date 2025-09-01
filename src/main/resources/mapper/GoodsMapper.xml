@@ -47,6 +47,21 @@
         where id = #{id}
     </update>
 
+    <!--【公共】动态条件分页查询-->
+    <select id="pageQueryPublic" resultType="com.yw.secondhandtrade.pojo.entity.Goods">
+        select * from goods
+        <where>
+            status = 0
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
     <!--根据id删除商品-->
     <delete id="deleteById">
         delete from goods where id = #{id}
@@ -61,4 +76,5 @@
     <update id="updateStock">
         update goods set stock = #{stock}, update_time = #{updateTime} where id = #{id}
     </update>
+
 </mapper>

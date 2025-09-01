@@ -3,6 +3,7 @@ package com.yw.secondhandtrade.service;
 import com.yw.secondhandtrade.common.result.PageResult;
 import com.yw.secondhandtrade.pojo.dto.GoodsDTO;
 //import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
+import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
 import com.yw.secondhandtrade.pojo.entity.Goods;
 
 import java.util.List;
@@ -76,4 +77,11 @@ public interface GoodsService {
      * @param goodsDTO
      */
     void updateMyGoods(GoodsDTO goodsDTO);
+
+    /**
+     * 【公共】商品分页查询
+     * @param goodsPageQueryDTO
+     * @return
+     */
+    PageResult pageQueryPublic(GoodsPageQueryDTO goodsPageQueryDTO);
 }

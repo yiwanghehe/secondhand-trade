@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.yw.secondhandtrade.common.annotation.FillTime;
 import com.yw.secondhandtrade.common.enumeration.DBOperationType;
 //import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
+import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
 import com.yw.secondhandtrade.pojo.entity.Goods;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -58,4 +59,11 @@ public interface GoodsMapper {
      * @param goods
      */
     void updateStock(Goods goods);
+
+    /**
+     * 【公共】动态条件分页查询
+     * @param goodsPageQueryDTO
+     * @return
+     */
+    Page<Goods> pageQueryPublic(GoodsPageQueryDTO goodsPageQueryDTO);
 }
