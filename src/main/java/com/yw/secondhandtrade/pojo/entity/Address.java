@@ -20,9 +20,8 @@ public class Address implements Serializable {
 
     private Long id;
     private Long userId;
-    private String contactName;
+    private String consignee;
     private String phone;
-    private String campus;
     private String detailLocation;
     private Integer isDefault;
     private LocalDateTime createTime;

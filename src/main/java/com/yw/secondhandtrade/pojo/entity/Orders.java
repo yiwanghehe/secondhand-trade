@@ -28,7 +28,7 @@ public class Orders implements Serializable {
 
     // 交易快照字段
     private String tradeLocation;
-    private String contactName;
+    private String consignee;
     private String contactPhone;
 
 
