@@ -25,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -80,10 +81,16 @@ public class OrdersServiceImpl implements OrdersService {
 
             totalAmount = totalAmount.add(goods.getPrice().multiply(new BigDecimal(item.getQuantity())));
 
+            // 若商品有多张图片，则以商品的第一张图片为快照
+            String coverImage = null;
+            if(StringUtils.hasText(goods.getImages())){
+                coverImage = goods.getImages().split(",")[0];
+            }
+
             OrderDetails orderDetails = OrderDetails.builder()
                     .goodsId(goods.getId())
                     .goodsName(goods.getName())
-                    .goodsImage(goods.getImages())
+                    .goodsImage(coverImage)
                     .price(goods.getPrice())
                     .quantity(item.getQuantity())
                     .build();
@@ -216,8 +223,6 @@ public class OrdersServiceImpl implements OrdersService {
         orderVO.setOrderDetails(orderDetailsMapper.getByOrderId(orderId));
         return orderVO;
     }
-
-
 
 
     /**

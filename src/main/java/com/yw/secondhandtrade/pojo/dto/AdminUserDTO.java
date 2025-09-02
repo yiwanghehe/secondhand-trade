@@ -24,6 +24,9 @@ public class AdminUserDTO implements Serializable {
     @Schema(description = "昵称", example = "小李飞刀")
     private String nickname;
 
+    @Schema(description = "头像图片url", example = "https://your-bucket-name.oss-cn-chengdu.aliyuncs.com/avatar.jpg")
+    private String avatarUrl;
+
     @Schema(description = "手机号码", example = "13900139000")
     private String phone;
 

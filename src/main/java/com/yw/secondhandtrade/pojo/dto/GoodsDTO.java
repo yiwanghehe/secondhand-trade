@@ -25,7 +25,7 @@ public class GoodsDTO implements Serializable {
     @Schema(description = "价格", requiredMode = Schema.RequiredMode.REQUIRED, example = "5")
     private BigDecimal price;
 
-    @Schema(description = "图片", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "sadasdadas")
+    @Schema(description = "图片", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "https://your-bucket-name.oss-cn-chengdu.aliyuncs.com/avatar.jpg")
     private String images;
 
     @Schema(description = "库存", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
