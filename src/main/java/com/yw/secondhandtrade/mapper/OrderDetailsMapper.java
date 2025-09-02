@@ -14,4 +14,11 @@ public interface OrderDetailsMapper {
      */
     @FillTime(DBOperationType.INSERT)
     void insertBatch(List<OrderDetails> orderDetailsList);
+
+    /**
+     * 根据订单ID查询订单详情
+     * @param orderId
+     * @return
+     */
+    List<OrderDetails> getByOrderId(Long orderId);
 }

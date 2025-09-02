@@ -9,4 +9,30 @@
             (#{orderNo}, #{buyerId}, #{sellerId}, #{totalAmount}, #{tradeLocation}, #{consignee}, #{contactPhone}, #{status}, #{createTime}, #{updateTime})
     </insert>
 
+    <update id="update">
+        update orders
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="paymentTime != null">payment_time = #{paymentTime},</if>
+            <if test="completionTime != null">completion_time = #{completionTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="getById" resultType="com.yw.secondhandtrade.pojo.entity.Orders">
+        select * from orders where id = #{id}
+    </select>
+
+    <select id="pageQuery" resultType="com.yw.secondhandtrade.pojo.vo.OrderVO">
+        select * from orders
+        <where>
+            (buyer_id = #{userId} or seller_id = #{userId})
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
 </mapper>

@@ -16,7 +16,6 @@ public class MessageConstant {
     public static final String UPLOAD_FAILED = "文件上传失败";
     public static final String PASSWORD_EDIT_FAILED = "密码修改失败";
     public static final String ORDER_STATUS_ERROR = "订单状态错误";
-    public static final String ORDER_NOT_FOUND = "订单不存在";
 
     public static final String GOODS_NOT_FOUND_OR_NO_PERMISSION = "商品不存在，或者商品的卖家ID与当前用户ID不匹配(无权限操作)";
     public static final String GOODS_INVALID_STATUS = "商品状态不合法";
@@ -29,6 +28,8 @@ public class MessageConstant {
     public static final String ORDER_ITEMS_EMPTY = "订单商品列表不能为空";
     public static final String ORDER_CANNOT_MIX_SELLERS = "一笔订单只能包含同一位卖家的商品";
     public static final String STOCK_NOT_ENOUGH = "库存不足";
+
+    public static final String ORDER_NOT_FOUND_OR_NO_PERMISSION = "订单不存在或无权限操作";
 
 }
 

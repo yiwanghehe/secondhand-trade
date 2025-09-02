@@ -71,17 +71,17 @@ public class GoodsServiceImpl implements GoodsService {
         return goods;
     }
 
-//    /**
-//     * 【管理端】商品分页查询
-//     * @param goodsPageQueryDTO
-//     * @return
-//     */
-//    @Override
-//    public PageResult pageQuery(GoodsPageQueryDTO goodsPageQueryDTO) {
-//        PageHelper.startPage(goodsPageQueryDTO.getPage(), goodsPageQueryDTO.getPageSize());
-//        Page<Goods> page = goodsMapper.pageQuery(goodsPageQueryDTO);
-//        return new PageResult(page.getTotal(), page.getResult());
-//    }
+    /**
+     * 【管理端】商品分页查询
+     * @param goodsPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(GoodsPageQueryDTO goodsPageQueryDTO) {
+        PageHelper.startPage(goodsPageQueryDTO.getPage(), goodsPageQueryDTO.getPageSize());
+        Page<Goods> page = goodsMapper.pageQuery(goodsPageQueryDTO);
+        return new PageResult(page.getTotal(), page.getResult());
+    }
 
     /**
      * 【管理端】修改商品

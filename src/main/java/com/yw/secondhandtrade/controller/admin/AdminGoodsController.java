@@ -4,12 +4,14 @@ import com.yw.secondhandtrade.common.result.PageResult;
 import com.yw.secondhandtrade.common.result.Result;
 import com.yw.secondhandtrade.pojo.dto.GoodsDTO;
 //import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
+import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
 import com.yw.secondhandtrade.pojo.entity.Goods;
 import com.yw.secondhandtrade.service.GoodsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,18 +51,18 @@ public class AdminGoodsController {
         return Result.success(goods);
     }
 
-//    /**
-//     * 商品分页查询
-//     * @param goodsPageQueryDTO
-//     * @return
-//     */
-//    @GetMapping("/page")
-//    @Operation(summary = "商品分页查询")
-//    public Result<PageResult> page(GoodsPageQueryDTO goodsPageQueryDTO) {
-//        log.info("商品分页查询，参数为：{}", goodsPageQueryDTO);
-//        PageResult pageResult = goodsService.pageQuery(goodsPageQueryDTO);
-//        return Result.success(pageResult);
-//    }
+    /**
+     * 商品分页查询
+     * @param goodsPageQueryDTO
+     * @return
+     */
+    @GetMapping("/page")
+    @Operation(summary = "商品分页查询")
+    public Result<PageResult> page(@ParameterObject GoodsPageQueryDTO goodsPageQueryDTO) {
+        log.info("商品分页查询，参数为：{}", goodsPageQueryDTO);
+        PageResult pageResult = goodsService.pageQuery(goodsPageQueryDTO);
+        return Result.success(pageResult);
+    }
 
     /**
      * 修改商品信息

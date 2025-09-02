@@ -1,19 +1,24 @@
 package com.yw.secondhandtrade.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.yw.secondhandtrade.common.constant.MessageConstant;
-import com.yw.secondhandtrade.common.constant.OrderStatus;
+import com.yw.secondhandtrade.common.constant.OrderStatusConstant;
 import com.yw.secondhandtrade.common.context.BaseContext;
 import com.yw.secondhandtrade.common.exception.BusinessException;
+import com.yw.secondhandtrade.common.result.PageResult;
 import com.yw.secondhandtrade.mapper.AddressMapper;
 import com.yw.secondhandtrade.mapper.GoodsMapper;
 import com.yw.secondhandtrade.mapper.OrderDetailsMapper;
 import com.yw.secondhandtrade.mapper.OrdersMapper;
 import com.yw.secondhandtrade.pojo.dto.OrderItemDTO;
+import com.yw.secondhandtrade.pojo.dto.OrdersPageQueryDTO;
 import com.yw.secondhandtrade.pojo.dto.OrdersSubmitDTO;
 import com.yw.secondhandtrade.pojo.entity.Address;
 import com.yw.secondhandtrade.pojo.entity.Goods;
 import com.yw.secondhandtrade.pojo.entity.OrderDetails;
 import com.yw.secondhandtrade.pojo.entity.Orders;
+import com.yw.secondhandtrade.pojo.vo.OrderVO;
 import com.yw.secondhandtrade.pojo.vo.OrdersSubmitVO;
 import com.yw.secondhandtrade.service.OrdersService;
 import org.springframework.beans.BeanUtils;
@@ -98,7 +103,7 @@ public class OrdersServiceImpl implements OrdersService {
                 .tradeLocation(address.getDetailLocation())
                 .consignee(address.getConsignee())
                 .contactPhone(address.getPhone())
-                .status(OrderStatus.PENDING_PAYMENT) // 初始状态为待支付
+                .status(OrderStatusConstant.PENDING_PAYMENT) // 初始状态为待支付
                 .createTime(LocalDateTime.now())
                 .build();
         ordersMapper.insert(order);
@@ -117,4 +122,121 @@ public class OrdersServiceImpl implements OrdersService {
                 .orderTime(order.getCreateTime())
                 .build();
     }
+
+    @Override
+    public void pay(Long orderId){
+        Long currentUserId = BaseContext.getId();
+        // 校验订单
+        Orders orders = checkOrderPermission(orderId, BaseContext.getId());
+
+        // 只有待付款订单才能支付
+        if (!orders.getStatus().equals(OrderStatusConstant.PENDING_PAYMENT)) {
+            throw new BusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        // TODO 需要补充实际的支付逻辑
+
+        Orders ordersToUpdate = Orders.builder()
+                .id(orderId)
+                .status(OrderStatusConstant.TO_BE_PICKED_UP)
+                .paymentTime(LocalDateTime.now())
+                .build();
+
+        ordersMapper.update(ordersToUpdate);
+    }
+
+    @Override
+    @Transactional
+    public void cancel(Long orderId) {
+        Orders orders = checkOrderPermission(orderId, BaseContext.getId());
+
+        // 只有待付款订单才能取消
+        if (!orders.getStatus().equals(OrderStatusConstant.PENDING_PAYMENT)) {
+            throw new BusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        // 归还商品库存
+        List<OrderDetails> orderDetails = orderDetailsMapper.getByOrderId(orderId);
+        for (OrderDetails detail : orderDetails) {
+            Goods goods = goodsMapper.getById(detail.getGoodsId());
+            goods.setStock(goods.getStock() + detail.getQuantity());
+            goodsMapper.updateStock(goods);
+        }
+
+        Orders ordersToUpdate = Orders.builder()
+                .id(orderId)
+                .status(OrderStatusConstant.CANCELLED)
+                .completionTime(LocalDateTime.now()) // 取消时间
+                .build();
+
+        ordersMapper.update(ordersToUpdate);
+    }
+
+    @Override
+    public void confirm(Long orderId) {
+        Orders orders = checkOrderPermission(orderId, BaseContext.getId());
+
+        // 只有待取货订单才能确认
+        if (!orders.getStatus().equals(OrderStatusConstant.TO_BE_PICKED_UP)) {
+            throw new BusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Orders ordersToUpdate = Orders.builder()
+                .id(orderId)
+                .status(OrderStatusConstant.COMPLETED)
+                .completionTime(LocalDateTime.now())
+                .build();
+
+        ordersMapper.update(ordersToUpdate);
+    }
+
+    @Override
+    public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+
+        ordersPageQueryDTO.setUserId(BaseContext.getId());
+        Page<OrderVO> page = ordersMapper.pageQuery(ordersPageQueryDTO);
+
+        // 为每个订单查询订单详情
+        if (page.getResult() != null && !page.getResult().isEmpty()) {
+            for (OrderVO orderVO : page.getResult()) {
+                List<OrderDetails> orderDetails = orderDetailsMapper.getByOrderId(orderVO.getId());
+                orderVO.setOrderDetails(orderDetails);
+            }
+        }
+        return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    @Override
+    public OrderVO details(Long orderId) {
+        Orders orders = checkOrderPermission(orderId, BaseContext.getId());
+
+        OrderVO orderVO = new OrderVO();
+        BeanUtils.copyProperties(orders, orderVO);
+        orderVO.setOrderDetails(orderDetailsMapper.getByOrderId(orderId));
+        return orderVO;
+    }
+
+
+
+
+    /**
+     * 校验订单是否存在以及是否属于当前用户
+     * @param orderId 订单ID
+     * @param currentUserId 当前用户ID
+     * @return 订单实体
+     */
+    private Orders checkOrderPermission(Long orderId, Long currentUserId){
+        Orders orders = ordersMapper.getById(orderId);
+        if(orders == null){
+            throw new BusinessException(MessageConstant.ORDER_NOT_FOUND_OR_NO_PERMISSION);
+        }
+
+        if(!orders.getBuyerId().equals(currentUserId) && !orders.getSellerId().equals(currentUserId)){
+            throw new BusinessException(MessageConstant.ORDER_NOT_FOUND_OR_NO_PERMISSION);
+        }
+
+        return orders;
+    }
+
 }

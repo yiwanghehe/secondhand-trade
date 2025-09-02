@@ -27,12 +27,12 @@ public interface GoodsMapper {
      */
     Goods getById(Long id);
 
-//    /**
-//     * 【管理端】动态条件分页查询
-//     * @param goodsPageQueryDTO
-//     * @return
-//     */
-//    Page<Goods> pageQuery(GoodsPageQueryDTO goodsPageQueryDTO);
+    /**
+     * 【管理端】动态条件分页查询
+     * @param goodsPageQueryDTO
+     * @return
+     */
+    Page<Goods> pageQuery(GoodsPageQueryDTO goodsPageQueryDTO);
 
     /**
      * 根据商品信息动态修改
