@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +28,9 @@ public class CommonController {
     @Autowired
     private GoodsService goodsService;
 
+//    不直接注入AliOSSUtils，而是注入它的ObjectProvider, 防止依赖注入时强制注入AliOSSUtils，从而时懒加载OSSClient失效
     @Autowired
-    private AliOSSUtils aliOSSUtils;
+    private ObjectProvider<AliOSSUtils> aliOSSUtilsProvider;
 
     @GetMapping("/goods/page")
     @Operation(summary = "【公共】商品分页查询")
@@ -49,6 +51,7 @@ public class CommonController {
         log.info("文件上传: {}", file.getOriginalFilename());
 
         try {
+            AliOSSUtils aliOSSUtils = aliOSSUtilsProvider.getObject();
             String url = aliOSSUtils.upload(file);
             log.info("文件上传成功, 文件访问URL: {}", url);
             return Result.success(url);
