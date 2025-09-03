@@ -9,9 +9,14 @@
         values (#{sellerId}, #{categoryId}, #{name}, #{description}, #{price}, #{images}, #{status}, #{stock}, #{createTime}, #{updateTime})
     </insert>
 
-    <!--根据id查询商品信息-->
     <select id="getById" resultType="com.yw.secondhandtrade.pojo.entity.Goods">
         select * from goods where id = #{id}
+    </select>
+
+    <!-- 根据id查询商品信息并加锁(悲观锁) -->
+    <!--当这条SQL在事务中执行时，MySQL会对查询到的这行数据施加一个排他锁-->
+    <select id="getByIdForUpdate" resultType="com.yw.secondhandtrade.pojo.entity.Goods">
+        select * from goods where id = #{id} for update
     </select>
 
     <!--【管理端】动态条件分页查询-->

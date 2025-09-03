@@ -65,7 +65,7 @@ public class OrdersServiceImpl implements OrdersService {
 
         // 遍历商品列表，校验并计算总价
         for (OrderItemDTO item : ordersSubmitDTO.getItems()) {
-            Goods goods = goodsMapper.getById(item.getGoodsId());
+            Goods goods = goodsMapper.getByIdForUpdate(item.getGoodsId());
 
             if (goods == null) {
                 throw new BusinessException(MessageConstant.GOODS_NOT_FOUND_OR_NO_PERMISSION);

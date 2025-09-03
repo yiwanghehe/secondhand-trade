@@ -28,6 +28,13 @@ public interface GoodsMapper {
     Goods getById(Long id);
 
     /**
+     * 根据id查询商品信息并加锁，防止超卖
+     * @param id
+     * @return
+     */
+    Goods getByIdForUpdate(Long id);
+
+    /**
      * 【管理端】动态条件分页查询
      * @param goodsPageQueryDTO
      * @return
