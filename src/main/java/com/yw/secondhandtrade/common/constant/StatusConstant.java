@@ -14,15 +14,16 @@ public class StatusConstant {
     public static final Integer OFF_SHELF = 2;
 
     // 地址默认状态
-    /**
-     * 默认地址
-     */
+    // 默认地址
     public static final Integer DEFAULT_ADDRESS = 0;
-    /**
-     * 非默认地址
-     */
+    // 非默认地址
     public static final Integer NON_DEFAULT_ADDRESS = 1;
 
+    // 聊天消息状态
+    // 未读
+    public static final Integer UNREAD = 0;
+    // 已读
+    public static final Integer READ = 1;
 
     /**
      * 验证通用状态值是否有效
