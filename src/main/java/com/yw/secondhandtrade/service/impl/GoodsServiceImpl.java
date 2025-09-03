@@ -2,6 +2,7 @@ package com.yw.secondhandtrade.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.yw.secondhandtrade.common.constant.CacheConstant;
 import com.yw.secondhandtrade.common.constant.MessageConstant;
 import com.yw.secondhandtrade.common.constant.StatusConstant;
 import com.yw.secondhandtrade.common.context.BaseContext;
@@ -10,22 +11,29 @@ import com.yw.secondhandtrade.common.exception.GoodsNotFoundException;
 import com.yw.secondhandtrade.common.result.PageResult;
 import com.yw.secondhandtrade.mapper.GoodsMapper;
 import com.yw.secondhandtrade.pojo.dto.GoodsDTO;
-//import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
 import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
 import com.yw.secondhandtrade.pojo.entity.Goods;
 import com.yw.secondhandtrade.service.GoodsService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
     private GoodsMapper goodsMapper;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     // --- 管理端方法实现 ---
 
@@ -55,6 +63,8 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         goodsMapper.insert(goods);
+
+        clearCache();
     }
 
     /**
@@ -72,18 +82,6 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     /**
-     * 【管理端】商品分页查询
-     * @param goodsPageQueryDTO
-     * @return
-     */
-    @Override
-    public PageResult pageQuery(GoodsPageQueryDTO goodsPageQueryDTO) {
-        PageHelper.startPage(goodsPageQueryDTO.getPage(), goodsPageQueryDTO.getPageSize());
-        Page<Goods> page = goodsMapper.pageQuery(goodsPageQueryDTO);
-        return new PageResult(page.getTotal(), page.getResult());
-    }
-
-    /**
      * 【管理端】修改商品
      * @param goodsDTO
      */
@@ -92,6 +90,8 @@ public class GoodsServiceImpl implements GoodsService {
         Goods goods = new Goods();
         BeanUtils.copyProperties(goodsDTO, goods);
         goodsMapper.update(goods);
+
+        clearCache();
     }
 
     /**
@@ -106,6 +106,8 @@ public class GoodsServiceImpl implements GoodsService {
                 .status(status)
                 .build();
         goodsMapper.update(goods);
+
+        clearCache();
     }
 
     /**
@@ -115,6 +117,8 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public void deleteById(Long id) {
         goodsMapper.deleteById(id);
+
+        clearCache();
     }
 
     // --- 用户端方法实现 ---
@@ -141,6 +145,8 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         goodsMapper.insert(goods);
+
+        clearCache();
     }
 
     /**
@@ -186,6 +192,8 @@ public class GoodsServiceImpl implements GoodsService {
                 .build();
 
         goodsMapper.update(goodsToUpdate);
+
+        clearCache();
     }
 
     /**
@@ -207,6 +215,8 @@ public class GoodsServiceImpl implements GoodsService {
         Goods goodsToUpdate = new Goods();
         BeanUtils.copyProperties(goodsDTO, goodsToUpdate);
         goodsMapper.update(goodsToUpdate);
+
+        clearCache();
     }
 
     /**
@@ -216,10 +226,53 @@ public class GoodsServiceImpl implements GoodsService {
      */
     @Override
     public PageResult pageQueryPublic(GoodsPageQueryDTO goodsPageQueryDTO) {
+        // 根据查询参数动态生成缓存的key
+        String cacheKey = CacheConstant.GOODS_CACHE_KEY +
+                "::" + goodsPageQueryDTO.getCategoryId() +
+                "::" + (goodsPageQueryDTO.getName() == null ? "null" : goodsPageQueryDTO.getName()) +
+                "::" + goodsPageQueryDTO.getPage() +
+                "::" + goodsPageQueryDTO.getPageSize();
+
+        // 从Redis缓存中查询数据
+        Object goodsCacheObj = redisTemplate.opsForValue().get(cacheKey);
+
+        // 判断缓存是否命中
+        if (goodsCacheObj instanceof PageResult) {
+            // 类型检查通过，说明是有效的缓存数据
+            log.info("命中商品分页缓存: {}", cacheKey);
+            return (PageResult) goodsCacheObj;
+        }
+
+        // 如果缓存未命中，则查询数据库
+        log.info("未命中商品分页缓存，查询数据库: {}", cacheKey);
         PageHelper.startPage(goodsPageQueryDTO.getPage(), goodsPageQueryDTO.getPageSize());
         Page<Goods> page = goodsMapper.pageQueryPublic(goodsPageQueryDTO);
-        return new PageResult(page.getTotal(), page.getResult());
+        PageResult pageResult = new PageResult(page.getTotal(), page.getResult());
+
+        // 将查询结果存入Redis，并设置过期时间（1小时）
+        redisTemplate.opsForValue().set(cacheKey, pageResult, 1, TimeUnit.HOURS);
+
+        return pageResult;
     }
 
+    /**
+     * 清理商品分页缓存
+     */
+    private void clearCache() {
+        // 构造匹配模式，* 是通配符
+        String cacheKeyPattern = CacheConstant.GOODS_CACHE_KEY + "*";
+        log.info("准备清理商品分页缓存，匹配模式: {}", cacheKeyPattern);
+
+        // 查找所有匹配模式的key
+        Set<String> keys = redisTemplate.keys(cacheKeyPattern);
+
+        // 判断key集合不为空，然后执行删除
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+            log.info("成功清理了 {} 条商品缓存", keys.size());
+        } else {
+            log.info("没有找到匹配的商品缓存需要清理");
+        }
+    }
 
 }

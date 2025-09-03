@@ -4,7 +4,6 @@ import com.yw.secondhandtrade.common.result.PageResult;
 import com.yw.secondhandtrade.common.result.Result;
 import com.yw.secondhandtrade.pojo.dto.CategoryDTO;
 import com.yw.secondhandtrade.pojo.dto.CategoryPageQueryDTO;
-import com.yw.secondhandtrade.pojo.entity.Category;
 import com.yw.secondhandtrade.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,13 +12,11 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/admin/category")
 @Tag(name = "【管理端】商品分类接口")
 @Slf4j
-public class CategoryController {
+public class AdminCategoryController {
 
     @Autowired
     private CategoryService categoryService;
@@ -56,11 +53,4 @@ public class CategoryController {
         return Result.success(pageResult);
     }
 
-    @GetMapping("/list")
-    @Operation(summary = "查询所有商品分类")
-    public Result<List<Category>> list() {
-        log.info("查询所有商品分类");
-        List<Category> list = categoryService.list();
-        return Result.success(list);
-    }
 }

@@ -4,6 +4,8 @@ import com.yw.secondhandtrade.common.result.PageResult;
 import com.yw.secondhandtrade.common.result.Result;
 import com.yw.secondhandtrade.common.utils.AliOSSUtils;
 import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
+import com.yw.secondhandtrade.pojo.entity.Category;
+import com.yw.secondhandtrade.service.CategoryService;
 import com.yw.secondhandtrade.service.GoodsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/common")
@@ -27,6 +30,9 @@ public class CommonController {
 
     @Autowired
     private GoodsService goodsService;
+
+    @Autowired
+    private CategoryService categoryService;
 
 //    不直接注入AliOSSUtils，而是注入它的ObjectProvider, 防止依赖注入时强制注入AliOSSUtils，从而时懒加载OSSClient失效
     @Autowired
@@ -38,6 +44,14 @@ public class CommonController {
         log.info("商品分页查询: {}", goodsPageQueryDTO);
         PageResult pageResult = goodsService.pageQueryPublic(goodsPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    @GetMapping("/list")
+    @Operation(summary = "【公共】商品分类查询")
+    public Result<List<Category>> list() {
+        log.info("查询所有商品分类");
+        List<Category> list = categoryService.list();
+        return Result.success(list);
     }
 
     /**

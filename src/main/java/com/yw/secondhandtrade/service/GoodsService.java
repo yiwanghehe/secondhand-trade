@@ -26,13 +26,6 @@ public interface GoodsService {
     Goods getById(Long id);
 
     /**
-     * 【管理端】商品分页查询
-     * @param goodsPageQueryDTO
-     * @return
-     */
-    PageResult pageQuery(GoodsPageQueryDTO goodsPageQueryDTO);
-
-    /**
      * 【管理端】修改商品
      * @param goodsDTO
      */

@@ -52,19 +52,6 @@ public class AdminGoodsController {
     }
 
     /**
-     * 商品分页查询
-     * @param goodsPageQueryDTO
-     * @return
-     */
-    @GetMapping("/page")
-    @Operation(summary = "商品分页查询")
-    public Result<PageResult> page(@ParameterObject GoodsPageQueryDTO goodsPageQueryDTO) {
-        log.info("商品分页查询，参数为：{}", goodsPageQueryDTO);
-        PageResult pageResult = goodsService.pageQuery(goodsPageQueryDTO);
-        return Result.success(pageResult);
-    }
-
-    /**
      * 修改商品信息
      * @param goodsDTO
      * @return
