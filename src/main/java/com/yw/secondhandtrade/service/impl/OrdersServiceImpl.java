@@ -156,24 +156,35 @@ public class OrdersServiceImpl implements OrdersService {
     @Transactional
     public void cancel(Long orderId) {
         Orders orders = checkOrderPermission(orderId, BaseContext.getId());
+        cancelOrderInternal(orders);
+    }
 
+    /**
+     * 提取出的取消订单核心逻辑，供用户主动取消和系统自动取消共同调用
+     * @param orders
+     */
+    @Override
+    @Transactional
+    public void cancelOrderInternal(Orders orders) {
         // 只有待付款订单才能取消
         if (!orders.getStatus().equals(OrderStatusConstant.PENDING_PAYMENT)) {
             throw new BusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
         // 归还商品库存
-        List<OrderDetails> orderDetails = orderDetailsMapper.getByOrderId(orderId);
+        List<OrderDetails> orderDetails = orderDetailsMapper.getByOrderId(orders.getId());
         for (OrderDetails detail : orderDetails) {
             Goods goods = goodsMapper.getById(detail.getGoodsId());
-            goods.setStock(goods.getStock() + detail.getQuantity());
-            goodsMapper.updateStock(goods);
+            if (goods != null) {
+                goods.setStock(goods.getStock() + detail.getQuantity());
+                goodsMapper.updateStock(goods);
+            }
         }
 
         Orders ordersToUpdate = Orders.builder()
-                .id(orderId)
+                .id(orders.getId())
                 .status(OrderStatusConstant.CANCELLED)
-                .completionTime(LocalDateTime.now()) // 取消时间
+                .completionTime(LocalDateTime.now()) // 记录取消时间
                 .build();
 
         ordersMapper.update(ordersToUpdate);

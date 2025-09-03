@@ -7,6 +7,10 @@ import com.yw.secondhandtrade.pojo.dto.OrdersPageQueryDTO;
 import com.yw.secondhandtrade.pojo.entity.Orders;
 import com.yw.secondhandtrade.pojo.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface OrdersMapper {
@@ -37,4 +41,12 @@ public interface OrdersMapper {
      * @return
      */
     Page<OrderVO> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    /**
+     * 根据状态和创建时间查询订单
+     * @param status 订单状态
+     * @param createTime 创建时间阈值
+     * @return
+     */
+    List<Orders> getByStatusAndCreateTimeLT(@Param("status") Integer status, @Param("createTime") LocalDateTime createTime);
 }

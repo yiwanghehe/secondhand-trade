@@ -3,6 +3,7 @@ package com.yw.secondhandtrade.service;
 import com.yw.secondhandtrade.common.result.PageResult;
 import com.yw.secondhandtrade.pojo.dto.OrdersPageQueryDTO;
 import com.yw.secondhandtrade.pojo.dto.OrdersSubmitDTO;
+import com.yw.secondhandtrade.pojo.entity.Orders;
 import com.yw.secondhandtrade.pojo.vo.OrderVO;
 import com.yw.secondhandtrade.pojo.vo.OrdersSubmitVO;
 
@@ -25,6 +26,12 @@ public interface OrdersService {
      * @param id
      */
     void cancel(Long id);
+
+    /**
+     * [内部调用] 取消订单的核心逻辑，无权限校验
+     * @param orders
+     */
+    void cancelOrderInternal(Orders orders);
 
     /**
      * 确认收货

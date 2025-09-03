@@ -35,4 +35,8 @@
         order by create_time desc
     </select>
 
+    <select id="getByStatusAndCreateTimeLT" resultType="com.yw.secondhandtrade.pojo.entity.Orders">
+        select * from orders where status = #{status} and create_time &lt; #{createTime}
+    </select>
+
 </mapper>
