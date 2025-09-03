@@ -25,4 +25,5 @@ public class Rating implements Serializable {
     private Integer score;
     private String comment;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

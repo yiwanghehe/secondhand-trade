@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yw.secondhandtrade.mapper.RatingMapper">
+
+    <insert id="insert">
+        insert into rating(order_id, rater_id, ratee_id, score, comment, create_time)
+        values (#{orderId}, #{raterId}, #{rateeId}, #{score}, #{comment}, #{createTime})
+    </insert>
+
+    <select id="getByOrderIdAndRaterId" resultType="com.yw.secondhandtrade.pojo.entity.Rating">
+        select * from rating where order_id = #{orderId} and rater_id = #{raterId}
+    </select>
+</mapper>
