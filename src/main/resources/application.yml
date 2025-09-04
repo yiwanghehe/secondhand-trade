@@ -14,6 +14,25 @@ spring:
       host: localhost
       port: 6379
 #      password: your_password # 如果你的Redis有密码，请取消注释并修改
+  rabbitmq:
+    host: your_rabbitmq_host # RabbitMQ 服务器地址
+    port: 5672 # RabbitMQ 服务端口
+    username: your_username # 登录用户名
+    password: your_password # 登录密码
+    virtual-host: / # 虚拟主机
+    # 开启 Publisher Confirms 机制，确保消息可靠投递到 Broker
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    listener:
+      simple:
+        # 设置消费者手动确认消息
+        acknowledge-mode: manual
+        retry:
+          enabled: true      # 开启监听容器连接重试
+          max-attempts: 10   # 最大重试次数 (可以根据需要调整)
+          initial-interval: 2s # 初始重试间隔 (例如2秒)
+          multiplier: 1.5    # 间隔乘数，实现退避策略 (可选)
+          max-interval: 30s  # 最大重试间隔 (可选)
 
 secondhandtrade:
   jwt:

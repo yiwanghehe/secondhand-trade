@@ -14,19 +14,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Component
-@Slf4j
+/**
+ * 原有的定时任务类，现已被RabbitMQ的延迟队列+死信队列机制取代。
+ */
+//@Component
+//@Slf4j
 public class OrderTask {
-
+    /*
     @Autowired
     OrdersMapper ordersMapper;
 
     @Autowired
     OrdersService ordersService;
 
-    /**
-     * 每分钟执行一次，处理超时订单
-     */
     @Scheduled(cron = "0 * * * * ?") // 表示每分钟的第0秒触发
     @Transactional
     public void processTimeoutOrder(){
@@ -56,4 +56,5 @@ public class OrderTask {
         }
         log.info("超时订单处理完成。");
     }
+    */
 }

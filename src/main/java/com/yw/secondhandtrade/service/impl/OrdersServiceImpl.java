@@ -11,7 +11,9 @@ import com.yw.secondhandtrade.mapper.AddressMapper;
 import com.yw.secondhandtrade.mapper.GoodsMapper;
 import com.yw.secondhandtrade.mapper.OrderDetailsMapper;
 import com.yw.secondhandtrade.mapper.OrdersMapper;
+import com.yw.secondhandtrade.mq.sender.RabbitMQSender;
 import com.yw.secondhandtrade.pojo.dto.OrderItemDTO;
+import com.yw.secondhandtrade.pojo.dto.OrderMessageDTO;
 import com.yw.secondhandtrade.pojo.dto.OrdersPageQueryDTO;
 import com.yw.secondhandtrade.pojo.dto.OrdersSubmitDTO;
 import com.yw.secondhandtrade.pojo.entity.Address;
@@ -44,6 +46,8 @@ public class OrdersServiceImpl implements OrdersService {
     private GoodsMapper goodsMapper;
     @Autowired
     private AddressMapper addressMapper;
+    @Autowired
+    private RabbitMQSender rabbitMQSender;
 
     @Override
     @Transactional
@@ -120,6 +124,19 @@ public class OrdersServiceImpl implements OrdersService {
             detail.setOrderId(order.getId());
         }
         orderDetailsMapper.insertBatch(orderDetailsList);
+
+        // RabbitMQ 异步处理消息
+        // 将订单创建消息发送到延迟队列，用于检查订单超时
+        rabbitMQSender.sendOrderToDelayQueue(order.getId());
+
+        // 将订单创建的消息通知给卖家
+        OrderMessageDTO orderMessageDTO = OrderMessageDTO.builder()
+                .orderId(order.getId())
+                .buyerId(order.getBuyerId())
+                .sellerId(order.getSellerId())
+                .build();
+        rabbitMQSender.sendOrderCreationNotification(orderMessageDTO);
+        // ------------------------------
 
         // 封装返回结果
         return OrdersSubmitVO.builder()
