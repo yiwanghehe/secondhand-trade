@@ -5,13 +5,20 @@
 
     <!--插入用户数据-->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into user (username, password, name, nickname, avatar_url, phone, role, status, create_time, update_time)
-        values (#{username}, #{password}, #{name}, #{nickname}, #{avatarUrl}, #{phone}, #{role}, #{status}, #{createTime}, #{updateTime})
+        insert into user (username, password, name, nickname, avatar_url, phone, role, status, auth_type, github_username, create_time, update_time)
+        values (#{username}, #{password}, #{name}, #{nickname},
+                #{avatarUrl}, #{phone}, #{role}, #{status},
+                #{authType}, #{githubUsername}, #{createTime}, #{updateTime})
     </insert>
 
     <!--根据用户名查询用户-->
     <select id="getByUsername" resultType="com.yw.secondhandtrade.pojo.entity.User">
         select * from user where username = #{username}
+    </select>
+
+    <!--根据github用户名查询用户-->
+    <select id="getByGithubUsername" resultType="com.yw.secondhandtrade.pojo.entity.User">
+        select * from user where github_username = #{githubUsername}
     </select>
 
     <!--【管理端】用户分页查询-->

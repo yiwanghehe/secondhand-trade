@@ -40,6 +40,13 @@ public interface UserMapper {
     User getById(Long id);
 
     /**
+     * 根据GitHub Username查询用户
+     * @param githubUsername
+     * @return
+     */
+    User getByGithubUsername(@Param("githubUsername") String githubUsername);
+
+    /**
      * 【管理端】用户分页查询
      * @param userPageQueryDTO
      * @return

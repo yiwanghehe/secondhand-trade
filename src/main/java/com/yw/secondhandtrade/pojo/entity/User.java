@@ -27,6 +27,8 @@ public class User implements Serializable {
     private String phone;
     private Integer role; // 1:普通用户 2:管理员
     private Integer status;
+    private String authType;
+    private String githubUsername; // 用于存储GitHub用户的唯一标识 (用户名)
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

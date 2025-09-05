@@ -62,5 +62,14 @@ public interface UserService {
      * @param adminUserDTO
      */
     void update(AdminUserDTO adminUserDTO);
+
+    /**
+     * 【SSO】处理GitHub OAuth用户登录/注册
+     * @param username GitHub的用户名
+     * @param nickname 昵称
+     * @param avatarUrl 头像
+     * @return User
+     */
+    User processOAuthUser(String username, String nickname, String avatarUrl);
 }
 

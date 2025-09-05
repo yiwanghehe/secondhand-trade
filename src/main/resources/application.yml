@@ -33,6 +33,13 @@ spring:
           initial-interval: 2s # 初始重试间隔 (例如2秒)
           multiplier: 1.5    # 间隔乘数，实现退避策略 (可选)
           max-interval: 30s  # 最大重试间隔 (可选)
+  security:
+    oauth2:
+      client:
+        registration:
+          github: # 登录/注册 http://localhost:8080/oauth2/authorization/github
+            client-id: your_github_client_id      # 替换为您的 Client ID
+            client-secret: your_github_client_secret # 替换为您的 Client Secret
 
 secondhandtrade:
   jwt:
