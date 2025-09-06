@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yw.secondhandtrade.server.mapper.AddressMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into address (user_id, consignee, phone, detail_location, is_default, create_time, update_time)
+        values (#{userId}, #{consignee}, #{phone}, #{detailLocation}, #{isDefault}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        update address
+        <set>
+            <if test="consignee != null">consignee = #{consignee},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="detailLocation != null">detail_location = #{detailLocation},</if>
+            <if test="isDefault != null">is_default = #{isDefault},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="setAllToNonDefaultByUserId">
+        update address set is_default = ${@com.yw.secondhandtrade.common.constant.StatusConstant@NON_DEFAULT_ADDRESS}
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteById">
+        delete from address where id = #{id}
+    </delete>
+
+    <select id="listByUserId" resultType="Address">
+        select * from address where user_id = #{userId} order by is_default asc, update_time desc
+    </select>
+
+    <select id="getById" resultType="Address">
+        select * from address where id = #{id}
+    </select>
+</mapper>
+

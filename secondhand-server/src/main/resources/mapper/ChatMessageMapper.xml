@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yw.secondhandtrade.server.mapper.ChatMessageMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into chat_message (from_user_id, to_user_id, content, send_time, read_status)
+        values (#{fromUserId}, #{toUserId}, #{content}, #{sendTime}, #{readStatus})
+    </insert>
+
+    <select id="getChatHistory" resultType="ChatMessage">
+        select * from chat_message
+        where (from_user_id = #{userId1} and to_user_id = #{userId2})
+           or (from_user_id = #{userId2} and to_user_id = #{userId1})
+        order by send_time asc
+    </select>
+
+    <update id="updateReadStatus">
+        update chat_message
+        set read_status = 1
+        where from_user_id = #{fromUserId}
+          and to_user_id = #{toUserId}
+          and read_status = 0
+    </update>
+
+</mapper>
