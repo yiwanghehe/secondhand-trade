@@ -58,6 +58,13 @@ public interface UserService {
     User getById(Long id);
 
     /**
+     * 【通用】根据用户名查询用户
+     * @param username
+     * @return
+     */
+    User getByUsername(String username);
+
+    /**
      * 【管理端】编辑用户信息
      * @param adminUserDTO
      */

@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-
+//
         String requestURI = request.getRequestURI();
         String token = null;
         Claims claims = null;

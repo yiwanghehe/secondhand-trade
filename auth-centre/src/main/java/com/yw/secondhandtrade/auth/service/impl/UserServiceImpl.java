@@ -219,6 +219,19 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 【通用】根据用户名查询
+     */
+    @Override
+    public User getByUsername(String username){
+        User user = userMapper.getByUsername(username);
+        if (user != null) {
+            user.setPassword("****");
+        } else {
+            throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
+        }
+        return user;
+    }
+    /**
      * 【管理端】编辑用户信息
      */
     @Override
