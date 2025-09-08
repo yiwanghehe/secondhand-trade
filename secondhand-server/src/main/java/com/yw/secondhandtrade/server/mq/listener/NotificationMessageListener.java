@@ -17,30 +17,30 @@ public class NotificationMessageListener {
 
     /**
      * 监听订单创建成功通知队列
-     * @param messageDTO 订单消息
+     * @param orderMessageDTO 订单消息
      * @param message RabbitMQ消息对象
      * @param channel AMQP通道
      * @throws IOException
      */
     @RabbitListener(queues = RabbitMQConstant.ORDER_NOTIFY_QUEUE)
-    public void handleOrderCreationNotification(OrderMessageDTO messageDTO, Message message, Channel channel) throws IOException {
+    public void handleOrderCreationNotification(OrderMessageDTO orderMessageDTO, Message message, Channel channel) throws IOException {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
-        log.info("收到订单创建通知: {}", messageDTO);
+        log.info("收到订单创建通知: {}", orderMessageDTO);
 
         try {
             // TODO 在这里可以实现邮件、短信通知等逻辑
 
             // 通过WebSocket向卖家推送实时通知
             String notificationContent = String.format("{\"type\":\"new_order\", \"message\":\"您有来自用户ID %d 的新订单，请及时处理！\", \"orderId\":%d}",
-                    messageDTO.getBuyerId(), messageDTO.getOrderId());
+                    orderMessageDTO.getBuyerId(), orderMessageDTO.getOrderId());
 
-            WebSocketServer.sendMessageToUser(messageDTO.getSellerId(), notificationContent);
+            WebSocketServer.sendMessage(orderMessageDTO.getBuyerId(), orderMessageDTO.getSellerId(), notificationContent);
 
             // 确认消息
             channel.basicAck(deliveryTag, false);
 
         } catch (Exception e) {
-            log.error("处理订单创建通知失败，消息: {}", messageDTO, e);
+            log.error("处理订单创建通知失败，消息: {}", orderMessageDTO, e);
             // 拒绝消息，不重新入队
             channel.basicNack(deliveryTag, false, false);
         }

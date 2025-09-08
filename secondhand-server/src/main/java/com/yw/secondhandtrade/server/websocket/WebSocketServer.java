@@ -3,6 +3,7 @@ package com.yw.secondhandtrade.server.websocket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.yw.secondhandtrade.common.constant.StatusConstant;
+import com.yw.secondhandtrade.common.context.BaseContext;
 import com.yw.secondhandtrade.pojo.dto.ChatMessageDTO;
 import com.yw.secondhandtrade.pojo.entity.ChatMessage;
 import com.yw.secondhandtrade.server.config.GetHttpSessionConfigurator;
@@ -110,20 +111,36 @@ public class WebSocketServer {
 
     /**
      * 向指定用户发送消息
-     * @param userId  目标用户的ID
+     * @param fromUserId 发送方用户的ID
+     * @param toUserId  目标用户的ID
      * @param message 要发送的消息内容
      */
-    public static void sendMessageToUser(Long userId, String message) {
-        Session session = sessionMap.get(userId);
-        if (session != null && session.isOpen()) {
+    public static void sendMessage(Long fromUserId, Long toUserId, String message) {
+        Session toSession = sessionMap.get(toUserId);
+
+        Integer readStatus = StatusConstant.UNREAD;
+        if(toSession != null && toSession.isOpen()) readStatus = StatusConstant.READ;
+
+        ChatMessage chatMessage = ChatMessage.builder()
+                .fromUserId(fromUserId)
+                .toUserId(toUserId)
+                .content(message)
+                .sendTime(LocalDateTime.now())
+                .readStatus(readStatus)
+                .build();
+
+        // 无论对方在不在线都作为信息保存
+        chatService.saveMessage(chatMessage);
+
+        if (toSession != null && toSession.isOpen()) {
             try {
-                session.getBasicRemote().sendText(message);
-                log.info("通过WebSocket向用户ID: {} 发送了一条消息: {}", userId, message);
+                toSession.getBasicRemote().sendText(message);
+                log.info("用户ID: {} 通过WebSocket向用户ID: {} 发送了一条消息: {}", fromUserId, toUserId, message);
             } catch (IOException e) {
-                log.error("通过WebSocket向用户ID: {} 发送消息失败", userId, e);
+                log.error("用户ID: {} 通过WebSocket向用户ID: {} 发送消息失败", fromUserId, toUserId, e);
             }
         } else {
-            log.warn("无法向用户ID: {} 发送WebSocket消息，因为用户不在线。", userId);
+            log.warn("用户ID: {} 无法向用户ID: {} 发送WebSocket消息，因为用户不在线，但已保存。", fromUserId, toUserId);
             // TODO 在此可以加入离线消息推送逻辑，例如使用第三方推送服务
         }
     }
