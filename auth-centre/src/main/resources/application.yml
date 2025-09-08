@@ -1,0 +1,82 @@
+server:
+  port: 8081
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: auth-centre
+  datasource:
+    # 数据库配置，留空或使用占位符，以便其他开发者知道需要配置哪些字段
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/your_database
+    username: your_username
+    password: your_password
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: your_password
+  security:
+    oauth2:
+      client:
+        registration:
+          github: # 登录/注册 http://localhost:8081/oauth2/authorization/github
+            client-id: your_github_client_id      # 替换为您的 Client ID
+            client-secret: your_github_client_secret # 替换为您的 Client Secret
+
+
+#secondhandtrade:
+#  jwt:
+#    # JWT 密钥配置，使用占位符
+#    # 设置jwt签名加密时使用的秘钥
+#    admin-secret-key: your-admin-jwt-secret-key
+#    # 设置jwt过期时间
+#    admin-ttl: 7200000
+#    # 设置前端传递过来的令牌名称
+#    admin-token-name: token
+#
+#    user-secret-key: your-user-jwt-secret-key
+#    user-ttl: 7200000
+#    user-token-name: authentication
+
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.yw.secondhandtrade.pojo.entity,com.yw.secondhandtrade.pojo.vo,com.yw.secondhandtrade.pojo.dto
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.yw.secondhandtrade.auth
+
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+# 开启详细的安全日志，便于调试认证授权流程。
+logging:
+  level:
+    org:
+      springframework:
+        security: trace
