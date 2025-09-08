@@ -36,12 +36,40 @@ spring:
           initial-interval: 2s # 初始重试间隔 (例如2秒)
           multiplier: 1.5    # 间隔乘数，实现退避策略 (可选)
           max-interval: 30s  # 最大重试间隔 (可选)
+  #  ===================  Spring Session 配置 ===================
+  session:
+    store-type: redis # 指定使用 Redis 存储 Session
+    redis:
+      namespace: "spring:session:secondhand" # 添加命名空间前缀，防止多项目共用Redis时冲突
+    timeout: 30m
+
+  # =================== SSO 客户端和资源服务器核心配置 ===================
   security:
     oauth2:
+      client:
+        # 注册一个名为 'auth-centre-client' 的服务提供商
+        provider:
+          auth-centre-client:
+            # 认证中心的地址
+            issuer-uri: http://localhost:8081
+        # 注册一个名为 'secondhand-client' 的客户端
+        registration:
+          secondhand-client:
+            provider: auth-centre-client # 使用上面定义的服务提供商
+            client-id: secondhand-client # 必须与认证中心注册的clientId一致
+            client-secret: secret      # 必须与认证中心注册的clientSecret一致
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+            scope: openid, profile, read, write
+            # 登录成功后，认证中心将用户重定向回此地址
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+      # 配置资源服务器，用于验证收到的JWT令牌
       resourceserver:
         jwt:
-          # 授权地址（认证中心的地址）
+          # 指向认证中心的公钥端点，用于获取验证签名所需的公钥
+          jwk-set-uri: http://localhost:8081/oauth2/jwks
           issuer-uri: http://localhost:8081
+
 
 #secondhandtrade:
 #  jwt:
@@ -86,7 +114,7 @@ springdoc:
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
-      packages-to-scan: com.yw.secondhandtrade
+      packages-to-scan: com.yw.secondhandtrade.server
 
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
@@ -100,3 +128,7 @@ pagehelper:
   support-methods-arguments: true
   params: count=countSql
 
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG

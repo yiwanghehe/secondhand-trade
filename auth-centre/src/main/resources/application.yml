@@ -26,19 +26,19 @@ spring:
             client-secret: your_github_client_secret # 替换为您的 Client Secret
 
 
-secondhandtrade:
-  jwt:
-    # JWT 密钥配置，使用占位符
-    # 设置jwt签名加密时使用的秘钥
-    admin-secret-key: your-admin-jwt-secret-key
-    # 设置jwt过期时间
-    admin-ttl: 7200000
-    # 设置前端传递过来的令牌名称
-    admin-token-name: token
-
-    user-secret-key: your-user-jwt-secret-key
-    user-ttl: 7200000
-    user-token-name: authentication
+#secondhandtrade:
+#  jwt:
+#    # JWT 密钥配置，使用占位符
+#    # 设置jwt签名加密时使用的秘钥
+#    admin-secret-key: your-admin-jwt-secret-key
+#    # 设置jwt过期时间
+#    admin-ttl: 7200000
+#    # 设置前端传递过来的令牌名称
+#    admin-token-name: token
+#
+#    user-secret-key: your-user-jwt-secret-key
+#    user-ttl: 7200000
+#    user-token-name: authentication
 
 mybatis:
   #mapper配置文件
@@ -60,7 +60,7 @@ springdoc:
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
-      packages-to-scan: com.yw.secondhandtrade
+      packages-to-scan: com.yw.secondhandtrade.auth
 
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
@@ -74,3 +74,9 @@ pagehelper:
   support-methods-arguments: true
   params: count=countSql
 
+# 开启详细的安全日志，便于调试认证授权流程。
+logging:
+  level:
+    org:
+      springframework:
+        security: trace

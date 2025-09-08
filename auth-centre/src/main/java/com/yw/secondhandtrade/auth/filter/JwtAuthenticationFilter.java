@@ -30,6 +30,7 @@ import java.util.Collections;
  */
 @Component
 @Slf4j
+@Deprecated(since = "已经弃用")
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired

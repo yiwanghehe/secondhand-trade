@@ -38,6 +38,7 @@ public class UserManagementController {
     /**
      * 管理端登录
      */
+    @Deprecated
     @PostMapping("/login")
     @Operation(summary = "管理员登录")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){

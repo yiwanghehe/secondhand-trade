@@ -154,8 +154,6 @@ public class UserServiceImpl implements UserService {
         // 加密
         if(userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()){
             user.setPassword(DigestUtils.md5DigestAsHex(userDTO.getPassword().getBytes()));
-        } else {
-            throw new PasswordEmptyException(MessageConstant.PASSWORD_EMPTY);
         }
 
         userMapper.update(user);

@@ -43,6 +43,7 @@ public class AccountController {
     /**
      * 登录
      */
+    @Deprecated
     @PostMapping("/login")
     @Operation(summary = "登录")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
