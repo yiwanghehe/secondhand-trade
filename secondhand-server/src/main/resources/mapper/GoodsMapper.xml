@@ -5,8 +5,8 @@
 
     <!--插入商品数据-->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into goods (seller_id, category_id, name, description, price, images, status, stock, create_time, update_time)
-        values (#{sellerId}, #{categoryId}, #{name}, #{description}, #{price}, #{images}, #{status}, #{stock}, #{createTime}, #{updateTime})
+        insert into goods (seller_id, category_id, name, description, price, images, status, stock, version, create_time, update_time)
+        values (#{sellerId}, #{categoryId}, #{name}, #{description}, #{price}, #{images}, #{status}, #{stock}, #{version}, #{createTime}, #{updateTime})
     </insert>
 
     <select id="getById" resultType="Goods">
@@ -45,8 +45,9 @@
             <if test="status != null">status = #{status},</if>
             <if test="stock != null">stock = #{stock},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            version = version + 1,
         </set>
-        where id = #{id}
+        where id = #{id} and version = #{version}
     </update>
 
     <!--【公共】动态条件分页查询-->
@@ -76,7 +77,7 @@
 
     <!-- 更新商品库存 -->
     <update id="updateStock">
-        update goods set stock = #{stock}, update_time = #{updateTime} where id = #{id}
+        update goods set stock = #{stock}, version = #{version} + 1, update_time = #{updateTime} where id = #{id} and version = #{version}
     </update>
 
 </mapper>

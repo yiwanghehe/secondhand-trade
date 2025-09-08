@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.yw.secondhandtrade.common.constant.MessageConstant;
 import com.yw.secondhandtrade.common.constant.OrderStatusConstant;
 import com.yw.secondhandtrade.common.context.BaseContext;
+import com.yw.secondhandtrade.common.exception.GoodsUpdateException;
 import com.yw.secondhandtrade.pojo.dto.OrderItemDTO;
 import com.yw.secondhandtrade.pojo.dto.OrderMessageDTO;
 import com.yw.secondhandtrade.pojo.dto.OrdersPageQueryDTO;
@@ -69,7 +70,8 @@ public class OrdersServiceImpl implements OrdersService {
 
         // 遍历商品列表，校验并计算总价
         for (OrderItemDTO item : ordersSubmitDTO.getItems()) {
-            Goods goods = goodsMapper.getByIdForUpdate(item.getGoodsId());
+//            Goods goods = goodsMapper.getByIdForUpdate(item.getGoodsId()); // 加入悲观锁
+            Goods goods = goodsMapper.getById(item.getGoodsId()); // 只使用默认的乐观锁
 
             if (goods == null) {
                 throw new BusinessException(MessageConstant.GOODS_NOT_FOUND_OR_NO_PERMISSION);
@@ -102,7 +104,12 @@ public class OrdersServiceImpl implements OrdersService {
 
             // 扣减库存
             goods.setStock(goods.getStock() - item.getQuantity());
-            goodsMapper.updateStock(goods);
+
+            int affectedRows = goodsMapper.updateStock(goods);
+
+            if(affectedRows == 0){
+                throw new GoodsUpdateException("系统繁忙");
+            }
         }
 
         // 构建订单并插入数据库

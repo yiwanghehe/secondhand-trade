@@ -26,6 +26,7 @@ public class Goods implements Serializable {
     private String images;
     private Integer status;
     private Integer stock;
+    private Integer version;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 

@@ -6,6 +6,7 @@ import com.yw.secondhandtrade.common.constant.CacheConstant;
 import com.yw.secondhandtrade.common.constant.MessageConstant;
 import com.yw.secondhandtrade.common.constant.StatusConstant;
 import com.yw.secondhandtrade.common.context.BaseContext;
+import com.yw.secondhandtrade.common.exception.GoodsUpdateException;
 import com.yw.secondhandtrade.pojo.dto.GoodsDTO;
 import com.yw.secondhandtrade.pojo.dto.GoodsPageQueryDTO;
 import com.yw.secondhandtrade.pojo.entity.Goods;
@@ -105,7 +106,12 @@ public class GoodsServiceImpl implements GoodsService {
                 .id(id)
                 .status(status)
                 .build();
-        goodsMapper.update(goods);
+
+        int affectedRows = goodsMapper.update(goods);
+
+        if(affectedRows == 0){
+            throw new GoodsUpdateException("系统繁忙，请重试");
+        }
 
         clearCache();
     }
@@ -142,6 +148,11 @@ public class GoodsServiceImpl implements GoodsService {
         // 二手商品库存默认为1
         if (goods.getStock() == null) {
             goods.setStock(1);
+        }
+
+        // 乐观锁version 刚发布时默认为1
+        if (goods.getVersion() == null) {
+            goods.setVersion(1);
         }
 
         goodsMapper.insert(goods);
@@ -191,7 +202,11 @@ public class GoodsServiceImpl implements GoodsService {
                 .status(status)
                 .build();
 
-        goodsMapper.update(goodsToUpdate);
+        int affectedRows = goodsMapper.update(goodsToUpdate);
+
+        if(affectedRows == 0){
+            throw new GoodsUpdateException("系统繁忙，请重试");
+        }
 
         clearCache();
     }
@@ -214,7 +229,12 @@ public class GoodsServiceImpl implements GoodsService {
         // 执行更新
         Goods goodsToUpdate = new Goods();
         BeanUtils.copyProperties(goodsDTO, goodsToUpdate);
-        goodsMapper.update(goodsToUpdate);
+
+        int affectedRows = goodsMapper.update(goodsToUpdate);
+
+        if(affectedRows == 0){
+            throw new GoodsUpdateException("系统繁忙，请重试");
+        }
 
         clearCache();
     }

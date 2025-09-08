@@ -27,7 +27,7 @@ public interface GoodsMapper {
     Goods getById(Long id);
 
     /**
-     * 根据id查询商品信息并加锁，防止超卖
+     * 根据id查询商品信息并加悲观锁，防止超卖
      * @param id
      * @return
      */
@@ -45,7 +45,7 @@ public interface GoodsMapper {
      * @param goods
      */
     @FillTime(DBOperationType.UPDATE)
-    void update(Goods goods);
+    int update(Goods goods);
 
     /**
      * 根据id删除商品
@@ -64,7 +64,8 @@ public interface GoodsMapper {
      * 更新商品库存
      * @param goods
      */
-    void updateStock(Goods goods);
+    @FillTime(DBOperationType.UPDATE)
+    int updateStock(Goods goods);
 
     /**
      * 【公共】动态条件分页查询
